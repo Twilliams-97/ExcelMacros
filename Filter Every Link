@@ -1,0 +1,21 @@
+Sub Filter_Every_Link()
+
+'Created by Tom Williams
+
+    Dim r As Range
+    
+'This part clears a row if it doesn't contain a hyperlink:
+
+    For Each r In ActiveSheet.UsedRange
+        If r.Hyperlinks.Count = 0 Then
+            r.Clear
+        End If
+    Next r
+    
+'This part clears a row if the cell in the range is empty:
+
+    For Each l In ActiveSheet.UsedRange
+        l.SpecialCells(xlCellTypeBlanks).Delete
+    Next l
+         
+End Sub
