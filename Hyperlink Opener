@@ -1,0 +1,42 @@
+Sub Link_Opener()
+
+'Created by Tom Williams
+'With thanks to https://www.ozgrid.com/forum/core/index.php?user/138548-trunten/ for URL formatting
+
+    Dim c As Range
+    Dim WorkRng As Range
+    Dim xTitleId As String
+    Dim url As String
+    Dim i As Long
+    
+'This part asks you to select a range:
+
+    xTitleId = "Select a range to open"
+    Set WorkRng = Selection
+    Set WorkRng = Application.InputBox(xTitleId, xTitleId, WorkRng.Address, Type:=8)
+    
+'This part follows hyperlinks:
+
+    If Not WorkRng Is Nothing Then
+        For Each c In WorkRng
+
+            If c.Hyperlinks.Count > 0 Then
+                For i = 1 To c.Hyperlinks.Count
+                    c.Hyperlinks(i).Follow
+                Next i
+                
+            ElseIf InStr(1, c.Formula, "HYPERLINK", vbTextCompare) > 0 Then
+                If InStr(1, c.Formula, ",") > 0 Then
+                    url = Evaluate(Left(c.Formula, InStr(1, c.Formula, ",") - 1) & ")")
+                Else
+                    url = c.Value
+                End If
+                
+            ActiveWorkbook.FollowHyperlink Address:=url
+            End If
+            
+        Next
+        
+    End If
+    
+End Sub
