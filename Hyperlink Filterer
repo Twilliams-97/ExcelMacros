@@ -1,0 +1,33 @@
+Sub Link_Filter()
+
+'Created by Tom Williams
+
+    Dim c As Range
+    Dim WorkRng As Range
+
+'This part asks you to select a range:
+
+    xTitleId = "Select a range to open"
+    Set WorkRng = Selection
+    Set WorkRng = Application.InputBox(xTitleId, xTitleId, WorkRng.Address, Type:=8)
+    
+'This part deletes everything that isn't a hyperlink:
+
+    If Not WorkRng Is Nothing Then
+        For Each c In WorkRng
+            If c.Hyperlinks.Count = 0 Then
+                c.Clear
+            End If
+        Next c
+    End If
+
+'And this part deletes all the blank cells and shifts them up:
+
+    For Each c In WorkRng
+        c.SpecialCells(xlCellTypeBlanks).Delete
+    Next c
+
+End Sub
+
+
+
