@@ -1,3 +1,5 @@
 Function FORMULAIN(r As Range)
+
   FORMULAIN = r.Formula
+  
 End Function
