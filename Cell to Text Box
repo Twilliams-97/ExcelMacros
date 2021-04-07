@@ -1,0 +1,9 @@
+'Created by Tom Williams
+
+Sub CellToTextBox()
+    With ActiveCell
+        ActiveSheet.Shapes.AddTextbox _
+          msoTextOrientationHorizontal, .Left, _
+          .Top, .Width, .Height
+    End With
+End Sub
