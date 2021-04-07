@@ -1,0 +1,309 @@
+Sub comments_and_highlights() 
+ 'Macro to list all comments and highlights in new sheet
+ Application.ScreenUpdating = False
+
+ Dim commrange As Range
+ Dim mycell As Range 
+ Dim curwks As Worksheet
+ Dim newwks As Worksheet
+ Dim i As Long
+ Dim rowTop As Long
+ Dim colFirst As Long
+ Dim colLast As Long
+ Dim rCell As Range
+ Dim temp As Range
+ Dim strg As String 
+ Dim strg2 As String
+
+ Dim aColor As Long
+ Dim bColor As Long
+ Dim cColor As Long  
+ aColor = vbYellow
+ bColor = RGB(255, 230, 0)
+ cColor = RGB(255, 255, 153)
+ Dim btn As Button
+
+ i = 1
+ ActiveWorkbook.Sheets.Add Before:=Worksheets(1)
+ Set newwks = ActiveSheet
+
+ newwks.Range("A1:E1").Value = _
+ Array("#", "Sheet", "Address", "Comment", "Value")
+
+ For Each sht In ActiveWorkbook.Sheets
+
+   Set curwks = sht
+
+   On Error Resume Next
+   Set commrange = curwks.Cells _
+      .SpecialCells(xlCellTypeComments)
+   On Error GoTo 0
+
+   If commrange Is Nothing Then
+
+   Else
+
+      For Each mycell In commrange
+        If mycell.MergeCells Then
+           colFirst = mycell.MergeArea.Columns(1).Column
+           colLast = mycell.MergeArea.Columns(mycell.MergeArea.Columns.Count).Column
+           rowTop = mycell.MergeArea.Rows(1).row
+        Else
+           colFirst = mycell.Column
+           colLast = mycell.Column
+           rowTop = mycell.row
+        End If
+
+        If mycell.row = rowTop _
+           And mycell.Column = colLast Then
+         With newwks
+          i = i + 1
+          On Error Resume Next
+          .Cells(i, 1).Value = i - 1
+          .Cells(i, 2).Value = curwks.Name
+.Hyperlinks.Add Anchor:=.Cells(i, 3), Address:="", _
+SubAddress:="'" & curwks.Name & "'" & "!" & mycell.Address, _
+TextToDisplay:=mycell.Address
+.Cells(i, 4).Value = Replace(curwks.Cells(rowTop, colFirst).Comment.Text, Chr(10), " ")
+curwks.Cells(rowTop, colFirst).Copy
+.Cells(i, 5).PasteSpecial Paste:=xlPasteValuesAndNumberFormats
+.Cells(i, 6).Value = " "
+strg = mycell.Address
+          strg2 = curwks.Name
+          newks.Activate
+          Set temp = ActiveSheet.Range(Cells(i, 6), Cells(i, 6))
+          Set btn = ActiveSheet.Buttons.Add(temp.Left, temp.Top, temp.Width, temp.Height)
+          With btn
+.OnAction = "'removeComment """ & strg & """,""" & strg2 & """'"
+.Caption = "Accept"
+End With
+
+        End With
+       End If
+
+     Next mycell
+ End If
+
+ Set commrange = Nothing
+ Set rCell = curwks.UsedRange
+ For Each cell In rCell
+    If cell.Interior.Color = aColor Or cell.Interior.Color = bColor Or cell.Interior.Color = cColor Then
+      If commrange Is Nothing Then
+         Set commrange = cell
+      Else
+         Set commrange = Union(commrange, cell)
+      End If
+    End If
+ Next cell
+
+ If commrange Is Nothing Then
+
+ Else
+
+ For Each mycell In commrange
+  If mycell.MergeCells Then
+    colFirst = mycell.MergeArea.Columns(1).Column
+    colLast = mycell.MergeArea.Columns(mycell.MergeArea.Columns.Count).Column
+    rowTop = mycell.MergeArea.Rows(1).row
+  Else
+    colFirst = mycell.Column
+    colLast = mycell.Column
+    rowTop = mycell.row
+  End If
+
+  If mycell.row = rowTop _
+   And mycell.Column = colLast Then
+   With newwks
+    i = i + 1
+    On Error Resume Next
+    .Cells(i, 1).Value = i - 1
+    .Cells(i, 2).Value = curwks.Name
+    .Hyperlinks.Add Anchor:=.Cells(i, 3), Address:="", _
+SubAddress:="'" & curwks.Name & "'" & "!" & mycell.Address, _
+TextToDisplay:=mycell.Address
+.Cells(i, 4).Value = "Highlight"
+curwks.Cells(rowTop, colFirst).Copy
+.Cells(i, 5).PasteSpecial Paste:=xlPasteValuesAndNumberFormats
+.Cells(i, 6).Value = " "
+strg = mycell.Address
+    strg2 = curwks.Name
+    newks.Activate
+    Set temp = ActiveSheet.Range(Cells(i, 6), Cells(i, 6))
+    Set btn = ActiveSheet.Buttons.Add(temp.Left, temp.Top, temp.Width, temp.Height)
+    With btn
+     .OnAction = "'removeHighlight """ & strg & """,""" & strg2 & """'"
+.Caption = "Accept"
+    End With
+
+   End With
+  End If
+ Next mycell
+ End If
+
+ Set commrange = Nothing
+
+ Next sht
+
+ newwks.Cells.WrapText = True
+ newwks.Columns.AutoFit
+ Columns("A").ColumnWidth = 5
+Columns("B").ColumnWidth = 40
+Columns("C").ColumnWidth = 10
+Columns("D").ColumnWidth = 60
+Columns("E").ColumnWidth = 60
+Columns("F").ColumnWidth = 10
+Columns("G").ColumnWidth = 2
+Columns("H").ColumnWidth = 2
+newwks.Name = (Worksheets.Count) & " - DELETE - Comments"
+Format
+ NormalPosition
+
+ Rows(1).Font.Bold = True
+ Range(Cells(1, 1), Cells(i, 5)).Borders.LineStyle = xlContinuous
+ Range(Cells(1, 1), Cells(i, 5)).VerticalAlignment = xlTop
+ Columns("A").HorizontalAlignment = xlLeft
+Range("a2").Select
+
+ If IsEmpty(ActiveCell) = True Then
+  Application.DisplayAlerts = False
+  newwks.Delete
+  Application.DisplayAlerts = True
+  MsgBox "No Comments or Highlights"
+ End If
+
+ Range("A1").Select
+ Application.ScreenUpdating = True
+'MK
+End Sub
+
+Sub removeHighlight(sPar As String, strg As String)
+ Application.ScreenUpdating = False
+
+ Application.DisplayAlerts = False
+ ActiveSheet.Delete
+ Application.DisplayAlerts = True
+
+ ActiveWorkbook.Sheets(strg).Select
+
+ Dim col, row
+col = Split(sPar, "$")(1)
+Row = Split(sPar, "$")(2)
+
+ Range(col & Row).Select
+ ActiveCell.Interior.ColorIndex = 0
+
+ comments_and_highlights
+ Application.ScreenUpdating = True
+'MK
+End Sub
+Sub removeComment(sPar As String, strg As String)
+ Application.ScreenUpdating = False
+
+ Application.DisplayAlerts = False
+ ActiveSheet.Delete
+ Application.DisplayAlerts = True
+
+ ActiveWorkbook.Sheets(strg).Select
+
+ Dim col, row
+ col = Split(sPar, "$")(1)
+Row = Split(sPar, "$")(2)
+
+ Range(col & Row).Select
+ If Not (ActiveCell.Comment Is Nothing) Then ActiveCell.Comment.Delete
+
+ comments_and_highlights
+ Application.ScreenUpdating = True
+End Sub
+
+Function LastCol(sh As Worksheet)
+ On Error Resume Next
+ LastCol = sh.Cells.Find(What:="*", _
+ After:=sh.Range("A1"), _
+ LookAt:=xlPart, _
+ LookIn:=xlFormulas, _
+ SearchOrder:=xlByColumns, _
+ SearchDirection:=xlPrevious, _
+ MatchCase:=False).Column
+ On Error GoTo 0
+End Function
+Function LastRow(sh As Worksheet)
+ On Error Resume Next
+ lastRow = sh.Cells.Find(What:="*", _
+ After:=sh.Range("A1"), _
+ LookAt:=xlPart, _
+ LookIn:=xlFormulas, _
+ SearchOrder:=xlByRows, _
+ SearchDirection:=xlPrevious, _
+ MatchCase:=False).row
+ On Error GoTo 0
+End Function
+
+Public Sub Format()
+
+ Cells.Select
+ With Selection.Font
+ .Name = "Arial"
+ .Size = 8
+ .Strikethrough = False
+ .Superscript = False
+ .Subscript = False
+ .OutlineFont = False
+ .Shadow = False
+ .Underline = xlUnderlineStyleNone
+ .TintAndShade = 0
+ .ThemeFont = xlThemeFontNone
+End With
+
+ Dim columnNum As Integer
+ Dim rowNum As Integer
+
+ On Error GoTo doError
+
+ columnNum = LastCol(ActiveSheet) + 3
+ rowNum = LastRow(ActiveSheet) + 3
+
+ ActiveSheet.PageSetup.PrintArea = Range(Cells(1, 1), Cells(rowNum - 1, columnNum - 1)).Address(False, False)
+
+ With Range(Range(Cells(rowNum, 1), Cells(rowNum, columnNum)).Address & "," & _
+ Range(Cells(1, columnNum), Cells(rowNum, columnNum)).Address).Interior
+ .ColorIndex = 11
+ .Pattern = xlSolid
+ .PatternColorIndex = xlAutomatic
+ End With
+
+ Rows(rowNum).RowHeight = 6.75
+ Columns(columnNum).ColumnWidth = 0.83
+
+ With Range(Range(Cells(rowNum + 1, 1), Cells(1048576, columnNum)).Address & "," & _
+ Range(Cells(1, columnNum + 1), Cells(1048576, 16384)).Address).Interior
+ .Color = RGB(128, 128, 128)
+ .Pattern = xlSolid
+ .PatternColorIndex = xlAutomatic
+ End With
+
+ ActiveSheet.DisplayPageBreaks = Not ActiveSheet.DisplayPageBreaks
+ Exit Sub
+
+doError:
+ MsgBox ("ERROR")
+
+'MK
+End Sub
+
+Public Sub NormalPosition()
+
+ Dim ws As Worksheet
+
+ For Each ws In ActiveWorkbook.Sheets
+
+If ws.Visible = True Then
+ws.Select
+ Range("a1").Select
+ End If
+
+ Next ws
+
+ Sheets(1).Select
+
+End Sub
