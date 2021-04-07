@@ -1,0 +1,10 @@
+'Created by Tom Williams
+'If not working, do: Visual Basic->Tools->References->Browse->FM20.DLL->Enter-OK
+'Can then assign this to a button, text box etc
+
+sub setClip()
+    Dim clipboard As MSForms.DataObject
+    Set clipboard = New MSForms.DataObject
+    clipboard.SetText "TEXT TO BE COPIED"
+    clipboard.PutInClipboard
+End Sub
