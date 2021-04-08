@@ -1,0 +1,69 @@
+Sub RemoveCharacterFromStart()
+
+    Dim c As Range
+    Dim rng As Range
+    Dim chrToRemove As Variant
+    
+    Set rng = Selection
+    
+    'Get the characters to be removed from the user
+    chrToRemove = Application.InputBox(prompt:= _
+        "Number of characters to remove from start:", _
+        Title:="Number of characters", Type:=1)
+    
+    'The User clicked Cancel
+    If chrToRemove = False Then Exit Sub
+    
+    'Loop through all cell in selection
+    For Each c In rng
+    
+        'If characters is less then string length, then blank
+        If chrToRemove < Len(c) Then
+        
+            'Record the values with characters removed
+            c.Value = Right(c, Len(c) - chrToRemove)
+    
+        Else
+    
+            c.Value = ""
+    
+        End If
+    
+    Next c
+
+End Sub
+
+Sub RemoveCharacterFromEnd()
+
+    Dim c As Range
+    Dim rng As Range
+    Dim chrToRemove As Variant
+    
+    Set rng = Selection
+    
+    'Get the characters to be removed from the user
+    chrToRemove = Application.InputBox(prompt:= _
+        "Number of characters to remove from end:", _
+        Title:="Number of characters", Type:=1)
+    
+    'The User clicked Cancel
+    If chrToRemove = False Then Exit Sub
+    
+    'Loop through all cell in selection
+    For Each c In rng
+    
+        'If characters is less then string length, then blank
+        If chrToRemove < Len(c) Then
+    
+            'Record the values with characters removed
+            c.Value = Left(c, Len(c) - chrToRemove)
+    
+        Else
+    
+            c.Value = ""
+    
+        End If
+    
+    Next c
+
+End Sub
