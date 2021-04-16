@@ -3,11 +3,11 @@ Sub MakeTwoColumns()
     Dim rng As Range
     Dim InputRng As Range, OutRng As Range
     
-    xTitleId = "Every Other Rower"
+    xTitleId = "1 Column to 2"
     
     Set InputRng = Application.Selection
     Set InputRng = Application.InputBox("Select Range:", xTitleId, InputRng.Address, Type:=8)
-    Set OutRng = Application.InputBox("Output to (single cell at top left of new range):", xTitleId, Type:=8)
+    Set OutRng = Application.InputBox("Select single cell at top left of where you want to paste:", xTitleId, Type:=8)
     Set InputRng = InputRng.Columns(1)
     
     For i = 1 To InputRng.Rows.Count Step 2
@@ -27,7 +27,7 @@ End Sub
     
     Set InputRng = Application.Selection
     Set InputRng = Application.InputBox("Select initial values :", xTitleId, InputRng.Address, Type:=8)
-    Set OutRng = Application.InputBox("Output to (single cell at top left of new range):", xTitleId, Type:=8)
+    Set OutRng = Application.InputBox("Select single cell at top left of where you want to paste:", xTitleId, Type:=8)
     Set InputRng = InputRng.Columns(1)
     
     For i = 1 To InputRng.Rows.Count Step 3
