@@ -1,3 +1,15 @@
+Function SingleCheck(ByVal Target As Range)
+
+    If Target.Count > 1 Then
+
+        MsgBox "Only one cell allowed to be selected at a time.", , "Single Cells Only"
+        SingleCheck = 1
+    End If
+    
+
+End Function
+
+
 Sub Copy_to_X_Columns()
 
     Dim valperrow As Integer
@@ -16,14 +28,25 @@ Sub Copy_to_X_Columns()
     
     Set inputrng = Application.Selection
     Set inputrng = Application.InputBox("Select First Cell in Column :", xTitleId, inputrng.Address, Type:=8)
+    
+    If SingleCheck(inputrng) = 1 Then
+        Exit Sub
+    End If
+   
     inputrng.Select
+   
     first_row = ActiveCell.Row
     first_col = ActiveCell.Column
     
     
     'Get the last cell in the column
     Set bottomrow = Application.Selection
-    Set bottomrow = Application.InputBox("Select Last Cell in Column:", xTitleId, bottomrow.Address, Type:=8)
+    Set bottomrow = Application.InputBox("Select Last Row in Column:", xTitleId, bottomrow.Address, Type:=8)
+    
+    If SingleCheck(bottomrow) = 1 Then
+        Exit Sub
+    End If
+    
     bottomrow.Select
     last_row = ActiveCell.Row
     
@@ -34,6 +57,11 @@ Sub Copy_to_X_Columns()
     'first cell where you want the data to go
     Set outputrng = Application.Selection
     Set outputrng = Application.InputBox("Select top left of where you want it to go :", xTitleId, outputrng.Address, Type:=8)
+    
+    If SingleCheck(outputrng) = 1 Then
+        Exit Sub
+    End If
+    
     outputrng.Select
     
     dest_start_col = ActiveCell.Column '3
@@ -59,3 +87,4 @@ Sub Copy_to_X_Columns()
     Next
 
 End Sub
+
